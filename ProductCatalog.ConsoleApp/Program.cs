@@ -15,17 +15,21 @@ namespace ProductCatalog.ConsoleApp
     {
         static void Main(string[] args)
         {
-            IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.SetBasePath(Directory.GetCurrentDirectory());
-            configurationBuilder.AddJsonFile("appsettings.json");
-            var configuration = configurationBuilder.Build();
-            var connectionString = configuration.GetConnectionString("DefaultConnection");
-            var dbContextOptionsBuilder = new DbContextOptionsBuilder<ProductDbContext>();
-            dbContextOptionsBuilder.UseSqlite(connectionString);
-            var dbContext = new ProductDbContext(dbContextOptionsBuilder.Options);
-            var productRepository = new ProductRepository(dbContext);
-            var productService = new ProductService(productRepository);
+            var config = GetConfiguration();
+            var connectionString = config.GetConnectionString("DefaultConnection");
+            var serviceProvider = GetServiceProvider();
+            var productController = serviceProvider.GetRequiredService<ProductController>();
+            bool Exit = false;
+            Product product;
 
+
+            IConfiguration GetConfiguration()
+            {
+                var configurationBuilder = new ConfigurationBuilder();
+                configurationBuilder.SetBasePath(Directory.GetCurrentDirectory());
+                configurationBuilder.AddJsonFile("appsettings.json");
+                return configurationBuilder.Build();
+            }
             IServiceProvider GetServiceProvider()
             {
                 IServiceCollection services = new ServiceCollection()
@@ -35,11 +39,7 @@ namespace ProductCatalog.ConsoleApp
                     .AddDbContext<ProductDbContext>(options => options.UseSqlite(connectionString));
                 return services.BuildServiceProvider();
             }
-
-            var serviceProvider = GetServiceProvider();
-            var productController = serviceProvider.GetRequiredService<ProductController>();
-            bool Exit = false;
-            Product product;
+            
             while (!Exit)
             {
                 Console.WriteLine("# # # # # Products App # # # # #");
@@ -55,17 +55,14 @@ namespace ProductCatalog.ConsoleApp
                         if (productList == null || productList.Count == 0)
                         {
                             Console.WriteLine("Not found Product");
-
-                        } 
-                        else
-                        {
-                            Console.WriteLine("Not found Product");
-                            foreach (var p in productList.ToList())
-                            {
-                                Console.WriteLine($"Id: {p.Id} \r\nTitle: {p.Name}\r\nDescription: {p.Description}\r\nPrice: {p.Price} грн\r\n - - - - - - - - - - - -");
-                            }
+                            Console.ReadLine();
+                            Console.Clear();
+                            break;
                         }
-                        
+                        foreach (var p in productList.ToList())
+                        {
+                            Console.WriteLine($"Id: {p.Id} \r\nTitle: {p.Name}\r\nDescription: {p.Description}\r\nPrice: {p.Price} грн\r\n - - - - - - - - - - - -");
+                        }
                         Console.ReadLine();
                         Console.Clear();
                         break;
@@ -95,12 +92,9 @@ namespace ProductCatalog.ConsoleApp
                             break;
 
                         }
-                        else
+                        foreach (var p in productController.GetAllProducts().ToList())
                         {
-                            foreach (var p in productController.GetAllProducts().ToList())
-                            {
-                                Console.WriteLine($"Id: {p.Id} \r\nTitle: {p.Name}\r\nDescription: {p.Description}\r\nPrice: {p.Price} грн\r\n - - - - - - - - - - - -");
-                            }
+                            Console.WriteLine($"Id: {p.Id} \r\nTitle: {p.Name}\r\nDescription: {p.Description}\r\nPrice: {p.Price} грн\r\n - - - - - - - - - - - -");
                         }
                         Console.Write("Напишите Id заметки, чтобы её изменить: ");
                         int id = Convert.ToInt32(Console.ReadLine());
@@ -128,13 +122,10 @@ namespace ProductCatalog.ConsoleApp
                             break;
 
                         }
-                        else
+                        foreach (var p in productController.GetAllProducts().ToList())
                         {
-                            foreach (var p in productController.GetAllProducts().ToList())
-                            {
-                                Console.WriteLine($"Id: {p.Id} \r\nTitle: {p.Name}\r\nDescription: {p.Description}\r\nPrice: {p.Price} грн\r\n - - - - - - - - - - - -");
-                                Console.WriteLine();
-                            }
+                            Console.WriteLine($"Id: {p.Id} \r\nTitle: {p.Name}\r\nDescription: {p.Description}\r\nPrice: {p.Price} грн\r\n - - - - - - - - - - - -");
+                            Console.WriteLine();
                         }
                         Console.Write("Напишите Id заметки, чтобы её удалить: ");
                         id = Convert.ToInt32(Console.ReadLine());
