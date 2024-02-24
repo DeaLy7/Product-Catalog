@@ -53,12 +53,13 @@ namespace ProductCatalog.ConsoleApp
                 Console.Clear();
                 if (menu == 1)
                 {
+                    
                     bool leaveFromProductMenu = false;
                     while (!leaveFromProductMenu)
                     {
                         Console.WriteLine("# # # # # Products App # # # # #");
                         Console.WriteLine("1 - View Products | 2 - Create Product | 3 - Update Product | 4 - Delete Product | 0 - Exit");
-                       
+                        menu = Convert.ToInt32(Console.ReadLine()); 
                         Console.Clear();
                         switch (menu)
                         {
@@ -184,17 +185,34 @@ namespace ProductCatalog.ConsoleApp
                                 Console.WriteLine("# # # # # Categories App # # # # # ");
                                 Console.WriteLine("Your categories:\r\n- - - - - - - - - - - -");
                                 var categoryList = categoryController.GetAllCategories();
-                                if (categoryList == null)
+                               
+                                if (categoryList == null || !categoryList.Any())
                                 {
                                     Console.WriteLine("Not found Category");
                                     Console.ReadLine();
                                     Console.Clear();
                                     break;
                                 }
+                                
                                 foreach (var p in categoryList.ToList())
-                                {
-                                    Console.WriteLine($"Id: {p.Id} \r\nName: {p.Name}\r\n - - - - - - - - - - - -");
+                                {                                  
+                                    Console.WriteLine($"Id: {p.Id} \r\nName: {p.Name}");
+                                    if (p.ParentCategory != null)
+                                    {
+                                        Console.WriteLine($"ParentCategory: {p.ParentCategory.Name}\r\n- - - - - - - - - - - -");
+                                    }
+                                    if (p.ChildCategories != null && p.ChildCategories.Any())
+                                        {
+                                            Console.Write($"ChildCategories: ");
+                                            foreach (var childCategory in p.ChildCategories)
+                                            {
+                                                Console.Write($" {childCategory.Name}");
+                                            }
+                                            Console.WriteLine("\r\n- - - - - - - - - - - -");
+                                        }
+                                     
                                 }
+                                
                                 Console.ReadLine();
                                 Console.Clear();
                                 break;
@@ -203,37 +221,169 @@ namespace ProductCatalog.ConsoleApp
 
                                 Console.WriteLine("# # # # # Category App # # # # # \r\nCreating new category:");
                                 Console.WriteLine("1 - Создать категорию | 2 - Создать подкатегорию");
-                                int categoryCreate = Convert.ToInt32(Console.ReadLine());
-                                if (categoryCreate == 1)
+                                int categorySelect = Convert.ToInt32(Console.ReadLine());
+                                if (categorySelect == 1)
                                 {
                                     category = new Category();
                                     Console.Write("Name: ");
                                     category.Name = Console.ReadLine();
-                                    Console.Write("ParentCategoryId: ");
-                                    category.ParentCategoryId = Convert.ToInt32(Console.ReadLine());
                                     categoryController.AddCategory(category);
                                     Console.Write("Success\n");
                                     Console.ReadLine();
                                     Console.Clear();
                                 }
-                                if (categoryCreate == 2)
+                                if (categorySelect == 2)
                                 {
                                     var categoryListForCreate = categoryController.GetAllCategories();
                                     foreach (var p in categoryListForCreate.ToList())
                                     {
-                                        Console.WriteLine($"Id: {p.Id} \r\nName: {p.Name}\r\n - - - - - - - - - - - -");
+                                        if (p.ParentCategory == null)
+                                        {
+                                           Console.WriteLine($"Id: {p.Id} \r\nName: {p.Name}");
+                                        }   
                                     }
+                                    
                                     Console.Write("Введите id категории для создания подкатегории: ");
                                     int categoriID = Convert.ToInt32(Console.ReadLine());
                                     category = new Category();
-                                    category.Name = Console.ReadLine();
+                                    Console.Write("Name: ");
+                                    category.Name = Console.ReadLine();                                   
                                     category.ParentCategoryId = categoriID;
+                                    categoryController.AddCategory(category);
+                                    Console.Clear();
                                 }
                                 break;
-                            
+                            case 3:
+                                Console.WriteLine("# # # # # Category App # # # # # \r\nUpdating category:");                                
+                                Console.WriteLine("1 - Обновить категорию | 2 - Обновить подкатегорию");
+                                categorySelect = Convert.ToInt32(Console.ReadLine());
+                                Console.Clear();
+                                if (categorySelect == 1)
+                                {
+                                    Console.WriteLine("# # # # # List Categories # # # # # ");
+                                    foreach (var p in categoryController.GetAllCategories().ToList())
+                                    {                                        
+                                            
+                                            if (p.ParentCategory == null)
+                                            {
+                                                Console.WriteLine($"Id: {p.Id} \r\nName: {p.Name}");
+                                            }                                            
+                                                   
+                                    }
+                                    Console.Write("Напишите Id заметки, чтобы её изменить: ");
+                                    int id = Convert.ToInt32(Console.ReadLine());
+                                    var categoryFind = categoryController.GetCategoryById(id);
+                                    Console.Clear();
+                                    if (categoryFind != null)
+                                    {
+                                        Console.Write("Name: ");
+                                        categoryFind.Name = Console.ReadLine();  
+                                        categoryController.UpdateCategory(categoryFind);
+                                        Console.Write("Success\n");
 
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Введен некорректный ID");
+                                    }
+                                    
+                                    Console.ReadLine();
+                                    Console.Clear();
+                                }
+                                if (categorySelect == 2)
+                                {
+                                    var categoryListForCreate = categoryController.GetAllCategories();
+                                    foreach (var p in categoryListForCreate.ToList())
+                                    {
+                                        if (p.ChildCategories == null)
+                                        {
+                                            Console.WriteLine($"Id: {p.Id} \r\nName: {p.Name}");
+                                        }
+                                    }
+                                    Console.Write("Введите id категории для изменение подкатегории: ");
+                                    int id = Convert.ToInt32(Console.ReadLine());
+                                    var categoryFind = categoryController.GetCategoryById(id);
+                                    Console.Clear();
+                                    if (categoryFind != null)
+                                    {
+                                        Console.Write("Name: ");
+                                        categoryFind.Name = Console.ReadLine();
+                                        categoryController.UpdateCategory(categoryFind);
+                                        Console.Write("Success\n");
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Введен некорректный ID");
+                                    }
+                                    Console.ReadLine();
+                                    Console.Clear();
+                                }
+                                break;
+                            case 4:
+                                Console.WriteLine("# # # # # Category App # # # # # \r\nDeleting category:");                               
+                                Console.WriteLine("1 - Удалить категорию | 2 - Удалить подкатегорию");
+                                categorySelect = Convert.ToInt32(Console.ReadLine());
+                                Console.Clear();
+                                if (categorySelect == 1)
+                                {
+                                    Console.WriteLine("# # # # # List Categories # # # # # ");
+                                    foreach (var p in categoryController.GetAllCategories().ToList())
+                                    {
+                                        if (p.ParentCategory == null)
+                                        {
+                                            Console.WriteLine($"Id: {p.Id} \r\nName: {p.Name}");
+                                        }
+                                    }
+                                    Console.Write("Введите Id категории: ");
+                                    int id = Convert.ToInt32(Console.ReadLine());
+                                    var categoryFind = categoryController.GetCategoryById(id);
+                                    Console.Clear();
+                                    if (categoryFind != null)
+                                    {                                        
+                                        categoryController.RemoveCategory(categoryFind);
+                                        Console.Write("Success\n");
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Введен некорректный ID");
+                                    }
+                                    
+                                    Console.ReadLine();
+                                    Console.Clear();
+                                }
+                                if (categorySelect == 2)
+                                {
+                                    var categoryListForDelete = categoryController.GetAllCategories();
+                                    foreach (var p in categoryListForDelete.ToList())
+                                    {
+                                        if (p.ChildCategories == null)
+                                        {
+                                            Console.WriteLine($"Id: {p.Id} \r\nName: {p.Name}");
+                                        }
+                                    }
+                                    Console.Write("Введите id для удаление подкатегории: ");
+                                    int id = Convert.ToInt32(Console.ReadLine());
+                                    var categoryFind = categoryController.GetCategoryById(id);
+                                    Console.Clear();
+                                    if (categoryFind != null)
+                                    {
+                                        categoryController.RemoveCategory(categoryFind);
+                                        Console.Write("Success\n");
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Вы ввели некорректный ID");
+                                    }
+                                    Console.ReadLine();
+                                    Console.Clear();
+                                }
+                                break;
+                            case 0:
                                 leaveFromCategoryMenu = true;
                                 break;
+
+                               
+                                
                         }
                     }
                 }

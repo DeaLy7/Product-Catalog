@@ -10,7 +10,8 @@ namespace ProductCatalog.DataAccess.Data
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
         public ProductDbContext(DbContextOptions<ProductDbContext> options): base(options) 
-        { 
+        {
+            Database.EnsureDeleted();
             Database.EnsureCreated();
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -21,12 +22,13 @@ namespace ProductCatalog.DataAccess.Data
             modelBuilder.Entity<Product>()
                         .HasMany(p => p.Categories)
                         .WithMany(c => c.Products)
-                        .UsingEntity("ProductCategories ");
+                        .UsingEntity("ProductCategories");
             modelBuilder.Entity<Category>()
                 .HasOne(c => c.ParentCategory)
                 .WithMany(p => p.ChildCategories)
-                .OnDelete(DeleteBehavior.SetNull)
-                .HasForeignKey(s => s.ParentCategoryId);
+                .HasForeignKey(s => s.ParentCategoryId)
+                .OnDelete(DeleteBehavior.Cascade);
+                
             
               
         }
