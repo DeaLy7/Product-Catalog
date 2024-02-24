@@ -10,23 +10,23 @@ namespace ProductCatalog.ConsoleApp.Controllers
         {
             _categoryService = categoryService;
         }
-        public void AddCategory(Product category)
+        public void AddCategory(Category category)
         {
             _categoryService.AddCategory(category);
         }
-        public void UpdateCategory(Product category)
+        public void UpdateCategory(Category category)
         {
             _categoryService.UpdateCategory(category);
         }
-        public void RemoveCategory(Product category)
+        public void RemoveCategory(Category category)
         {
             _categoryService.RemoveCategory(category);
         }
-        public List<Product> GetAllCategories()
+        public List<Category> GetAllCategories()
         {
             return _categoryService.GetAllCategories();
         }
-        public Product? GetCategoryById(int id)
+        public Category? GetCategoryById(int id)
         {
             return _categoryService.GetCategoryById(id);
         }

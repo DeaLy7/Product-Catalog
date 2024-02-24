@@ -14,23 +14,23 @@ namespace ProductCatalog.BussinessLogic.Service
         {
             _categorytRepository = categorytRepository;
         }
-        public void AddCategory(Product category)
+        public void AddCategory(Category category)
         {
             _categorytRepository.AddCategory(category);
         }
-        public void UpdateCategory(Product category)
+        public void UpdateCategory(Category category)
         {
             _categorytRepository.UpdateCategory(category);
         }
-        public void RemoveCategory(Product category)
+        public void RemoveCategory(Category category)
         {
             _categorytRepository.RemoveCategory(category);
         }
-        public List<Product> GetAllCategories()
+        public List<Category> GetAllCategories()
         {
             return _categorytRepository.GetAllCategories();
         }
-        public Product? GetCategoryById(int id)
+        public Category? GetCategoryById(int id)
         {
             return _categorytRepository.GetCategoryById(id);
         }

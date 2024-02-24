@@ -11,28 +11,28 @@ namespace ProductCatalog.DataAccess.Repositories
         {
             _dbContext = dbContext;
         }
-        public void AddCategory(Product category)
+        public void AddCategory(Category category)
         {
-            _dbContext.Add(category);
+            _dbContext.Categories.Add(category);
             _dbContext.SaveChanges();
         }
-        public void UpdateCategory(Product category)
+        public void UpdateCategory(Category category)
         {
-            _dbContext.Update(category);
+            _dbContext.Categories.Update(category);
             _dbContext.SaveChanges();
         }
-        public void RemoveCategory(Product category)
+        public void RemoveCategory(Category category)
         {
-            _dbContext.Remove(category);
+            _dbContext.Categories.Remove(category);
             _dbContext.SaveChanges();
         }
-        public List<Product> GetAllCategories()
+        public List<Category> GetAllCategories()
         {
-            return _dbContext.Products.ToList();
+            return _dbContext.Categories.ToList();
         }
-        public Product? GetCategoryById(int id)
+        public Category? GetCategoryById(int id)
         {
-            return _dbContext.Products.Find(id);
+            return _dbContext.Categories.FirstOrDefault(i => i.Id == id);
         }
 
     }
